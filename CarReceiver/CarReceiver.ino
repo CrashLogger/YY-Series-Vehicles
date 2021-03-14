@@ -30,8 +30,8 @@ uint8_t address[][6] = {"000FA", "000FF"};    //REC, ACK
 bool radioNumber = 1; //Receiver will use pipe [1] to transmit acknowledgements
 
   
-  int powerR = 90;
-  int powerL = 90;
+  int powerR = 128;
+  int powerL = 128;
 
 void setup() {
   ////Serial.begin(9600);
@@ -83,24 +83,25 @@ void setup() {
 }
 
 void Right(){
+  
   if (powerR > 160){
     digitalWrite(4, LOW);
     digitalWrite(5, HIGH);
-    if (powerR > 170){
+    if (powerR > 200){
       analogWrite(3,255);
     }
     else{
-      analogWrite(3, 255);
+      analogWrite(3, 220);
     }
   }
-  else if(powerR < 20){
+  else if(powerR < 60){
     digitalWrite(4, HIGH);
     digitalWrite(5, LOW);
-    if (powerR < 10){
+    if (powerR < 20){
       analogWrite(3,255);
     }
     else{
-      analogWrite(3, 255);
+      analogWrite(3, 220);
     }    
   }
   else{
@@ -108,27 +109,28 @@ void Right(){
     digitalWrite(4, LOW);
     digitalWrite(5, LOW);
   }
+
 }
 
-void Left(){
+void Left(){  
   if (powerL > 160){
     digitalWrite(6, LOW);
     digitalWrite(9, HIGH);
         if (powerR > 170){
-      analogWrite(3,255);
-    }
-    else{
-      analogWrite(10, 255);
-    }   
-  }
-  else if (powerL < 20){
-    digitalWrite(6, HIGH);
-    digitalWrite(9, LOW);
-    if (powerL < 10){
       analogWrite(10,255);
     }
     else{
-      analogWrite(10, 255);
+      analogWrite(10, 220);
+    }   
+  }
+  else if (powerL < 60){
+    digitalWrite(6, HIGH);
+    digitalWrite(9, LOW);
+    if (powerL < 20){
+      analogWrite(10,255);
+    }
+    else{
+      analogWrite(10, 220);
     }   
   }
   else{
@@ -142,8 +144,8 @@ void loop() {
     if (radio.available(&pipe)) {                 // Check if there's a package waiting
       uint8_t bytes = radio.getPayloadSize();     // Read the package size
       radio.read(&data, bytes);                   // Read the package
-      powerL = map(data.thrust, 0, 180, 0, 255);
-      powerR = map(data.elevator, 0, 180, 0, 255);
+      powerL = map(data.thrust, 0, 1023, 0, 255);
+      powerR = map(data.elevator, 0, 1023, 0, 255);
       digitalWrite(2, data.buzzer);
    }
    

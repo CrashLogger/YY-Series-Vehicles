@@ -16,6 +16,8 @@
 
 Servo ESC;
 Servo Elevator;
+Servo RudderR;
+Servo RudderL;
 //Servo RudderR;
 //Servo RudderL;
 
@@ -37,14 +39,11 @@ bool radioNumber = 1; // 0 uses address[0] to transmit, 1 uses address[1] to tra
 
 void setup() {
 
-  Serial.begin(9600);
-  Serial.println("start");
+  //Serial.begin(9600);
   ESC.attach(3, 1000, 2000);
+  RudderR.attach(A3);
+  RudderL.attach(A2);
   Elevator.attach(A0, 1000, 2000);
-  pinMode(9, OUTPUT);
-  analogWrite(9, 200);
-  delay(500);
-  analogWrite(9, 0);
   
   // Initialise the SPI bus transciever
   if (!radio.begin()) {
@@ -55,10 +54,6 @@ void setup() {
     delay(1000);
     } // hold in infinite loop
   }
-
-  radioNumber = 1;
-    Serial.println("2");
-
   // Set the PA Level low to try preventing power supply related problems
   // because these examples are likely run with nodes in close proximity to
   // each other.
@@ -74,28 +69,44 @@ void setup() {
 }
 
 void loop() {
-    Serial.println("5");
     uint8_t pipe;
     if (radio.available(&pipe)) {                 // Check if there's a package waiting
       uint8_t bytes = radio.getPayloadSize();     // Read the package size
       radio.read(&data, bytes);                   // Read the package
-      ESC.write(data.thrust);
-      Elevator.write(data.elevator);
-      Serial.print("Thrust:");
-      Serial.println(data.thrust);
-      if (data.buzzer){
-        Buzz();
-      }
-      else{
-        analogWrite(9, 0);
-      }
+
+      Power();
+      //Serial.print(F(","));
+      Rudders();
+      //Serial.print(F(","));
+      Elevators();
+      //Serial.println();
    }
 }
 
-void Buzz(){
-  unsigned long tempo = millis();
-  if (tempo % 250){
-    buzzerState = !buzzerState;
+void Power(){
+  int thrust = map (data.thrust, 1023, 0, 0, 150);
+  if (data.thrust < 500){
+    ESC.write(thrust);
+    //Serial.print(F("Thrust:"));
+    //Serial.print(thrust);
   }
-  digitalWrite(9, buzzerState);
+  else{
+    ESC.write(0);
+    //Serial.print(F("0"));
+  }
+}
+
+void Rudders(){
+  int rudderAngle = map(data.rudder, 0, 1023, 45, 135);
+  RudderR.write(rudderAngle);
+  RudderL.write(rudderAngle);
+  //Serial.print(F("Rudders:"));
+  //Serial.print(rudderAngle);
+}
+
+void Elevators(){
+  int elevatorAngle = map(data.elevator, 1023, 0, 45, 135);
+  Elevator.write(elevatorAngle);
+  //Serial.print(F("Elevator:"));
+  Serial.print(elevatorAngle);
 }

@@ -66,7 +66,7 @@ void setup() {
   }
 
   radioNumber = 0;
-  radio.setPALevel(RF24_PA_HIGH);  // RF24_PA_MAX
+  radio.setPALevel(RF24_PA_LOW);  // RF24_PA_MAX
   //OPTIONS ARE: "MIN" "LOW" "HIGH" "MAX"
   
   //Sets size of payload for reliability
@@ -96,23 +96,23 @@ void setup() {
 
 void RadioFail(){
   digitalWrite(redLED, HIGH);
-  delay(250);
+  delay(100);
   digitalWrite(redLED, LOW);
-  delay(125);
+  delay(250);
   digitalWrite(redLED, HIGH);
-  delay(50);
+  delay(100);
   digitalWrite(redLED, LOW);
-  delay(250);
+  delay(500);
 }
 
 void loop() {
     unsigned long start_timer = micros();
     bool report = radio.write(&data, sizeof(Package));
     unsigned long end_timer = micros();
-      data.thrust = map(analogRead(joyX), 0, 1023, 180, 0);
-      data.elevator = map(analogRead(joyX1), 0, 1023, 180, 0);
-      data.rudder = map (analogRead(joyY), 0, 1023, 0, 180);
-      data.aileron = map (analogRead(joyY1), 0, 1023, 0, 180);
+      data.thrust = map (analogRead(joyX), 0, 1023, 1023, 0);
+      data.elevator = map (analogRead(joyX1), 0, 1023, 1023, 0);
+      data.rudder = analogRead(joyY);
+      data.aileron = analogRead(joyY1);
       data.brake = !digitalRead(joySw);
       data.buzzer = !digitalRead(joySw1);
       //analogWrite(3, data.thrust);
