@@ -13,3 +13,4 @@ YY serie hegazkinarekin batera, CS serieko autoa, tanke erara gidatutako lur ibi
 
 Bi serieek kontrol sistema berbera erabiltzen dute, industriako estandarrekin konpatibleak ez direnak.
 NRF24L01 txipdun moduluen bitartez komunikatzen dira, kanal bakar baten bidez. Biek 2S litio bateriekin erabili daitezke, baina YY seriearen kasuan 3S bateriek ere erabili daitezke.
+NRF24L01 txipdun moduluen bitartez komunikatzen dira, kanal bakar baten bidez. Biek 2S litio bateriekin erabili daitezke, baina YY seriearen kasuan 3S bateriak ere erabili daitezke.
