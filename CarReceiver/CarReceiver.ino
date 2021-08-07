@@ -34,46 +34,18 @@ bool radioNumber = 1; //Receiver will use pipe [1] to transmit acknowledgements
   int powerL = 128;
 
 void setup() {
-  ////Serial.begin(9600);
-  pinMode(10, OUTPUT); //EN  1
-  pinMode(3, OUTPUT);  //EN  2
-  pinMode(4, OUTPUT);  //Pos 1
-  pinMode(5, OUTPUT);  //Neg 1
-  pinMode(6, OUTPUT);  //Pos 2
-  pinMode(9, OUTPUT);  //Neg 2
-  pinMode(2, OUTPUT);  //Neg 2
-
-  digitalWrite(5, HIGH);
-  digitalWrite(4, LOW);
-  digitalWrite(3, HIGH);
-  digitalWrite(9, HIGH);
-  digitalWrite(6, LOW);
-  digitalWrite(10, HIGH);
-  delay(1000);
-  digitalWrite(4, LOW);
-  digitalWrite(5, LOW);
-  digitalWrite(3, LOW);
-  digitalWrite(6, LOW);
-  digitalWrite(9, LOW);
-  digitalWrite(10, LOW);
-  delay(1000);
-  digitalWrite(5, LOW);
-  digitalWrite(4, HIGH);
-  digitalWrite(3, HIGH);
-  digitalWrite(9, LOW);
-  digitalWrite(6, HIGH);
-  digitalWrite(10, HIGH);
-  delay(1000);
 
   // Initialise the SPI bus transciever
   if (!radio.begin()) {
     ////Serial.println(F("radio hardware is not responding!!"));
-    while (1) {} // hold in infinite loop
+    while (1) {} // hold in infinite loop if it can't connect to the controller
   }
+
+  //radio.enableAckPayload();
 
   radioNumber = 1;
   radio.setPALevel(RF24_PA_HIGH);  // RF24_PA_MAX is default.
-  //Optimise sending time by setting the maximum to the variables maximum
+  //Optimise sending time by setting the maximum to the variables size
   radio.setPayloadSize(sizeof(data));
   
   //Sets the pipes in the receiver order, opposite to the transmitter order.
@@ -82,73 +54,72 @@ void setup() {
   radio.startListening();
 }
 
-void Right(){
-  
-  if (powerR > 160){
-    digitalWrite(4, LOW);
-    digitalWrite(5, HIGH);
-    if (powerR > 200){
-      analogWrite(3,255);
-    }
-    else{
-      analogWrite(3, 220);
-    }
-  }
-  else if(powerR < 60){
-    digitalWrite(4, HIGH);
-    digitalWrite(5, LOW);
-    if (powerR < 20){
-      analogWrite(3,255);
-    }
-    else{
-      analogWrite(3, 220);
-    }    
-  }
-  else{
-    analogWrite(3, 0);
-    digitalWrite(4, LOW);
-    digitalWrite(5, LOW);
-  }
-
-}
-
-void Left(){  
-  if (powerL > 160){
-    digitalWrite(6, LOW);
-    digitalWrite(9, HIGH);
-        if (powerR > 170){
-      analogWrite(10,255);
-    }
-    else{
-      analogWrite(10, 220);
-    }   
-  }
-  else if (powerL < 60){
-    digitalWrite(6, HIGH);
-    digitalWrite(9, LOW);
-    if (powerL < 20){
-      analogWrite(10,255);
-    }
-    else{
-      analogWrite(10, 220);
-    }   
-  }
-  else{
-    analogWrite(10, 0);
-    digitalWrite(6, LOW);
-    digitalWrite(9, LOW);
-  }
-}
 void loop() {
+  
     uint8_t pipe;
     if (radio.available(&pipe)) {                 // Check if there's a package waiting
       uint8_t bytes = radio.getPayloadSize();     // Read the package size
       radio.read(&data, bytes);                   // Read the package
-      powerL = map(data.thrust, 0, 1023, 0, 255);
-      powerR = map(data.elevator, 0, 1023, 0, 255);
+      powerL = map(data.thrust, 0, 1023, 0, 9);
+      powerR = map(data.elevator, 0, 1023, 0, 9);
       digitalWrite(2, data.buzzer);
    }
-   
+  digitalWrite(2, data.buzzer);
   Right();
   Left();
+}
+
+void Right(){
+  digitalWrite(2, data.buzzer);
+  if (powerR > 6){
+    digitalWrite(4, LOW);
+    digitalWrite(5, HIGH);
+    if (powerR >= 8){
+      analogWrite(3, 255);
+    }
+    else{
+      analogWrite(3, 132);
+    }
+  }
+  else if (powerR <3){
+    digitalWrite(5, LOW);
+    digitalWrite(4, HIGH);
+    if (powerR < 1){
+      analogWrite(3, 255);
+    }
+    else{
+      analogWrite(3,132);
+    }
+  }
+  else{
+    digitalWrite(4, LOW);
+    digitalWrite(5, LOW);
+  }
+}
+void Left(){
+  digitalWrite(2, data.buzzer);  
+  if (powerL > 6){
+    digitalWrite(6, LOW);
+    digitalWrite(9, HIGH);
+    if (powerL >= 8){
+      analogWrite(10, 255);
+    }
+    else{
+      analogWrite(10, 132);
+    }
+  }
+  else if (powerL <3){
+    digitalWrite(9, LOW);
+    digitalWrite(6, HIGH);
+    if (powerL < 1){
+      analogWrite(10, 255);
+    }
+    else{
+      analogWrite(10,132);
+    }
+  }
+  else{
+    digitalWrite(9, LOW);
+    digitalWrite(6, LOW);
+  }
 }

@@ -66,7 +66,7 @@ void setup() {
   }
 
   radioNumber = 0;
-  radio.setPALevel(RF24_PA_LOW);  // RF24_PA_MAX
+  radio.setPALevel(RF24_PA_HIGH);  // RF24_PA_MAX
   //OPTIONS ARE: "MIN" "LOW" "HIGH" "MAX"
   
   //Sets size of payload for reliability

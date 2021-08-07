@@ -43,21 +43,17 @@ void setup() {
   ESC.attach(3, 1000, 2000);
   RudderR.attach(A3);
   RudderL.attach(A2);
-  Elevator.attach(A0, 1000, 2000);
+  Elevator.attach(A0);
   
   // Initialise the SPI bus transciever
   if (!radio.begin()) {
 
-    while (1) {    analogWrite(9, 130);
-    delay(100);
-    analogWrite(9, 0);
+    while (1) {
     delay(1000);
-    } // hold in infinite loop
+    } // Hold in infinite loop if it cannot connect to the controller
   }
-  // Set the PA Level low to try preventing power supply related problems
-  // because these examples are likely run with nodes in close proximity to
-  // each other.
-  radio.setPALevel(RF24_PA_LOW);  // RF24_PA_MAX is default.
+
+  radio.setPALevel(RF24_PA_HIGH);  // RF24_PA_MAX is default.
 
   //Optimise sending time by setting the maximum to the variables maximum
   radio.setPayloadSize(sizeof(data));
@@ -84,8 +80,8 @@ void loop() {
 }
 
 void Power(){
-  int thrust = map (data.thrust, 1023, 0, 0, 150);
-  if (data.thrust < 500){
+  int thrust = map (data.thrust, 1023, 512, 0, 175);
+  if (data.thrust < 480){
     ESC.write(thrust);
     //Serial.print(F("Thrust:"));
     //Serial.print(thrust);
@@ -105,8 +101,8 @@ void Rudders(){
 }
 
 void Elevators(){
-  int elevatorAngle = map(data.elevator, 1023, 0, 45, 135);
+  int elevatorAngle = map(data.elevator, 0, 1023, 40, 140);
   Elevator.write(elevatorAngle);
   //Serial.print(F("Elevator:"));
-  Serial.print(elevatorAngle);
+  //Serial.print(elevatorAngle);
 }
