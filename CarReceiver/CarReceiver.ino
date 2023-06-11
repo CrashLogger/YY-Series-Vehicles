@@ -104,18 +104,18 @@ void Left(){
 
 void Right(){
   if (data.elevator>((1024/2)+Margin)){
-    digitalWrite(4, HIGH);
-    digitalWrite(5, LOW);
+    digitalWrite(5, HIGH);
+    digitalWrite(4, LOW);
     PowerR = map(data.elevator, (1024/2)+Margin, 1024, 64, 255);
   }
   else if (data.elevator<((1024/2)-Margin)){
-    digitalWrite(4, LOW);
-    digitalWrite(5, HIGH);
+    digitalWrite(5, LOW);
+    digitalWrite(4, HIGH);
     PowerR = map(data.elevator, (1024/2)-Margin, 24, 64, 255);
   }
   else{
-    digitalWrite(4, LOW);
     digitalWrite(5, LOW);
+    digitalWrite(4, LOW);
     PowerR = 0;
   }
   
